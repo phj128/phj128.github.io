@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta content="CoDA" name="title" />
+    <meta content="This paper generates whole-body manipulation of articulated objects."
+        name="description" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta content="English" name="language" />
+    <meta content="Huaijin Pi" name="author" />
+    <title>CoDA</title>
+    <!-- Bootstrap -->
+    <!-- <script src="js/video_comparison.js"></script> -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap-4.4.1.js"></script>
+
+    <link href="css/bootstrap-4.4.1.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css" rel="stylesheet" />
+    <!-- <link href="img/favicon.svg" rel="icon" sizes="any" type="image/svg+xml" /> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        code {
+            white-space: pre-wrap;
+        }
+
+        body {
+            font-family: 'Jost';
+        }
+
+        b {
+            font-weight: black;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        section>h5 {
+            padding-bottom: 30px;
+        }
+
+        .col-12>h3 {
+            padding-top: 5px;
+        }
+
+        .results-section {
+            padding-bottom: 30px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .carousel-control-prev {
+            left: 25px;
+        }
+
+        .carousel-control-next {
+            right: 25px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0%;
+            left: 90%;
+
+            /* Adjust vertical position */
+            text-align: center;
+            /* Center the content horizontally */
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .carousel-indicators li {
+            background-color: transparent;
+            /* Hide the default Bootstrap indicators */
+            border: none;
+            /* Remove border */
+            margin: 0 25px;
+            display: inline-block;
+        }
+
+        .indicator-dot {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            text-indent: -999px;
+            border: none;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .row.sm-gutters {
+            margin-right: 5px;
+            margin-left: 5px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .row.sm-gutters>.col-md-4 {
+            padding-right: 5px;
+            padding-left: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .row.sm-gutters>.col-md-6 {
+            padding-right: 5px;
+            padding-left: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .row.sm-gutters>.col-md-12 {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+
+        .renbody-zoom-container {
+            width: 80%;
+            /* Or whatever size you want */
+            aspect-ratio: 0.75;
+            /* Or whatever size you want */
+            overflow: hidden;
+            /* Hide the parts of the video outside the container */
+            object-fit: cover;
+            /* Make sure the video covers the container without stretching */
+            object-position: center;
+            /* Center the video */
+            border-radius: 5px;
+        }
+
+        .mobile-zoom-container {
+            width: 100%;
+            /* Or whatever size you want */
+            aspect-ratio: 0.75;
+            /* Or whatever size you want */
+            overflow: hidden;
+            /* Hide the parts of the video outside the container */
+            object-fit: cover;
+            /* Make sure the video covers the container without stretching */
+            object-position: center;
+            /* Center the video */
+            border-radius: 5px;
+            margin: 5px
+        }
+
+        .video-zoom-container {
+            overflow: hidden;
+            /* Hide the parts of the video outside the container */
+            object-fit: cover;
+            /* Make sure the video covers the container without stretching */
+            object-position: center;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .zoom-element {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .zoom-element:hover {
+            transform: scale(1.);
+        }
+
+        .nhr-zoom {
+            transform: scale(1.45);
+        }
+
+        .renbody-zoom {
+            transform: scale(1.65) translateY(2%);
+            border-radius: 5px;
+        }
+
+        .mobile-zoom {
+            transform: scale(1.65);
+            border-radius: 5px;
+        }
+
+        .zjumocap-zoom {
+            transform: scale(1.3);
+        }
+
+        video {
+            border-radius: 5px;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .comparison-canvas {
+            padding: 0px;
+            margin: 0px;
+            border-radius: 5px;
+        }
+
+        .a16x9 {
+            aspect-ratio: 16/9;
+        }
+
+        .a4x3 {
+            aspect-ratio: 1352/1014;
+        }
+
+        .a1x1 {
+            aspect-ratio: 1;
+        }
+
+        .a16x9demo {
+            aspect-ratio: 3.05;
+        }
+
+        .a4x3demo {
+            aspect-ratio: 2.0;
+        }
+
+        .a1x1demo {
+            aspect-ratio: 1600/1672;
+        }
+    </style>
+    <script>
+
+
+
+    </script>
+    </link>
+</head>
+
+<body>
+    <!-- cover -->
+    <section>
+        <div class="jumbotron text-center mt-0">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 style="font-weight: bold">
+                            <b>
+                                <!-- <br> -->
+                                <span style="color: #c68b5b">CoDA</span>:
+                                <span style="color: #78aa58">Coordinated</span> Diffusion Noise Optimization for
+                                <br>
+                                <span style="color: #6589bf">Whole-Body</span> Manipulation of 
+                                <span style="color:#a50c07";>Articulated</span> Objects
+                            </b>
+                        </h1>
+                        <!-- <h4 style="color:#5a6268;">Arxiv 2024</h4> -->
+                        <hr>
+                        <a href="https://phj128.github.io" target="_blank">Huaijin Pi<sup>1</sup> </a> 
+                        <a href="https://anitacen.github.io/" target="_blank">Zhi Cen<sup>2</sup> </a> 
+                        <a href="https://anitacen.github.io/" target="_blank">Zhiyang Dou<sup>1</sup> </a> 
+                        <a href="https://i.cs.hku.hk/~taku" target="_blank">Taku Komura<sup>1</sup> </a> 
+                        </a>
+                        <p>
+                            <sup>1</sup>The University of Hong Kong   
+                            <sup>2</sup>Zhejiang University
+                        </p>
+                        <div class="row justify-content-center">
+                            <div class="column">
+                                <p class="mb-5">
+                                    <a class="btn btn-large btn-light" href=""
+                                        role="button" target="_blank">
+                                        <i class="fa fa-file-pdf-o"></i>
+                                        <b>Paper</b>
+                                    </a>
+                                </p>
+                            </div>
+                            <div class="column">
+                                <p class="mb-5">
+                                    <a class="btn btn-large btn-light" href=""
+                                        role="button" target="_blank">
+                                        <i class="fa fa-github"></i>
+                                        <b>Code</b>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h3>Teaser Demo</h3>
+                    <hr style="margin-top: 0px" />
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <video width="60%" controls="controls" autoplay muted loop>
+                            <source src="video/teaser.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h3>Abstract</h3>
+                    <hr style="margin-top: 0px"/>
+                    <img src="image/teaser_v2.png" width="70%" class="mx-auto d-block"/>
+                         Our approach enables: (a) generating whole-body manipulation of articulated objects from text input (e.g., “a person uses the mixer”);
+                        (b) manipulating the object to a target pose and articulation (the blue object is the target pose); (c) synthesizing whole-body motion guided by trajectories from hand-only data; 
+                        (d) generating motions involving simultaneous walking and manipulation (e.g., opening a box while walking).
+                    <p class="text-left mt-3">
+                        Synthesizing whole-body manipulation of articulated objects, including body motion, hand motion, and object motion, is a critical yet challenging task with broad applications in virtual humans and robotics.
+                        The core challenges are twofold.
+                        First, achieving realistic whole-body motion requires tight coordination between the hands and the rest of the body, as their movements are interdependent during manipulation. 
+                        Second, articulated object manipulation typically involves high degrees of freedom and demands higher precision, often requiring the fingers to be placed at specific regions to actuate movable parts.
+                        To address these challenges, we propose a novel coordinated diffusion noise optimization framework.
+                        Specifically, we perform noise-space optimization over three specialized diffusion models for the body, left hand, and right hand, each trained on its own motion dataset to improve generalization.
+                        Coordination naturally emerges through gradient flow along the human kinematic chain, allowing the global body posture to adapt in response to hand motion objectives with high fidelity.
+                        To further enhance precision in hand-object interaction, we adopt a unified representation based on basis point sets (BPS), where end-effector positions are encoded as distances to the same BPS used for object geometry.
+                        This unified representation captures fine-grained spatial relationships between the hand and articulated object parts, and the resulting trajectories serve as targets to guide the optimization of diffusion noise, producing highly accurate interaction motion.
+                        We conduct extensive experiments demonstrating that our method outperforms existing approaches in motion quality and physical plausibility, and enables various capabilities such as object pose control, simultaneous walking and manipulation, and whole-body generation from hand-only data.
+                        The code will be released for reproducibility.
+                        <br>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section> <p style="font-size: small;">
+                  
+
+    <section>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h3>Method</h3>
+                    <hr style="margin-top: 0px" />
+                </div>
+                <div class="col-12">
+                    <div style="display: flex; justify-content: center;">
+                        <img src="image/pipeline_v4.png" width="80%" />
+                    </div>
+                    <p>
+                        <strong>Pipeline</strong>.
+                        (a) Given the initial human pose, object pose, and text, we first generate the articulated object trajectory and the corresponding end-effector trajectories via two conditional diffusion models.
+                        (b) We then optimize the latent noise inputs of three decoupled diffusion models by propagating gradients through the kinematic chain, guided by end-effector tracking, penetration, and regularization losses.
+                        Finally, we forward the optimized noise through the diffusion models to synthesize coherent whole-body motion aligned with the generated object motion.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h3>Capabilities</h3>
+                    <hr style="margin-top: 0px" />
+                </div>
+            </div>
+
+            <!-- Capability 1 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Object Motion Control</h4>
+                    <video class="mx-auto d-block" style="width: 40%;" controls="controls" autoplay muted loop>
+                        <source src="video/keyframe.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Capability 2 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Text Control</h4>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Video 1 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Input:</strong> "A person grabs the microwave."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/text_control/047.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 2 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Input:</strong> "A person uses the microwave."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/text_control/099.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Video 1 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Input:</strong> "The person passes the camera."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/grab/021.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 2 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Input:</strong> "The person takes picture with the camera."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/grab/024.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Capability 3 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Simultaneous Locomotion and Manipulation</h4>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Video 1 -->
+                <div class="col-md-3 text-center">
+                    <p> Walk forward.</p>
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/walkobj/posz.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 2 -->
+                <div class="col-md-3 text-center">
+                    <p> Walk backward.</p>
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/walkobj/negz.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 3 -->
+                <div class="col-md-3 text-center">
+                    <p> Walk left.</p>
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/walkobj/posx.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 4 -->
+                <div class="col-md-3 text-center">
+                    <p> Walk right.</p>
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/walkobj/negx.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Capability 4 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Diverse Results</h4>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Video 1 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Sample 1:</strong> "A person uses the laptop."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/diverse/1.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 2 -->
+                <div class="col-md-6 text-center">
+                    <p><strong>Sample 2:</strong> "A person uses the laptop."</p>
+                    <video class="rounded" style="width: 70%;" controls autoplay muted loop>
+                        <source src="video/diverse/2.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Capability 5 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Deployment on Simulated Humanoids</h4>
+                    <video class="mx-auto d-block" style="width: 40%;" controls="controls" autoplay muted loop>
+                        <source src="video/phys.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Capability 5 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Whole-Body Motion from Hand-only Data</h4>
+                    <video class="mx-auto d-block" style="width: 40%;" controls="controls" autoplay muted loop>
+                        <source src="video/hot3d.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            
+            <!-- Capability 6 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Generalization to Different Object Geometry</h4>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Video 1 -->
+                <div class="col-md-4 text-center">
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/cams/000.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 2 -->
+                <div class="col-md-4 text-center">
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/cams/005.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Video 3 -->
+                <div class="col-md-4 text-center">
+                    <video class="w-100 rounded" style="width: 40%;" controls autoplay muted loop>
+                        <source src="video/cams/016.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    <h3>More Results</h3>
+                    <hr style="margin-top: 0px" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <div class="carousel slide" data-interval="10000" data-ride="carousel" id="bkgdCarousel">
+                        <ol class="carousel-indicators">
+                            <li class="active" data-slide-to="0" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="1" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="2" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="3" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="4" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="5" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="6" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="7" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="8" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="9" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="10" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="11" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="12" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="13" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="14" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="15" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                            <li data-slide-to="16" data-target="#bkgdCarousel">
+                                <span class="indicator-dot"></span>
+                            </li>
+                        </ol>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>"A person uses the waffleiron." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/032.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the notebook."
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/003.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the laptop." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/096.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the mixer." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/084.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the espressomachine."
+                                            
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/075.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the espressomachine."
+                                            
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/058.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the phone." 
+                                            
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/007.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the box."
+                                            
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/102.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the notebook." 
+                                            
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/062.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the microwave."
+                                         
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/116.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the phone." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/027.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the scissors."
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/108.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the capsulemachine." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/112.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the laptop." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/061.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person grabs the waffleiron."
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/070.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the mixer." 
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/024.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row sm-gutters">
+                                    <div class="col-md-12">
+                                        <p>
+                                            "A person uses the ketchup."
+                                        </p>
+                                        <video style="width: 40%;" autoplay muted loop>
+                                            <source src="video/ours/122.mp4" type="video/mp4">
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" data-slide="prev" href="#bkgdCarousel" role="button">
+                            <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" data-slide="next" href="#bkgdCarousel" role="button">
+                            <span aria-hidden="true" class="carousel-control-next-icon"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- citing -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                </br>
+                </br>
+                <h3>Citation</h3>
+                <hr style="margin-top: 0px" />
+                <pre style="background-color: #e9eeef; padding: 1.5em 1.5em; border-radius: 20px">
+<code>@article{pi2025coda,
+  title={CoDA: Coordinated Diffusion Noise Optimization for Whole-Body Manipulation of Articulated Objects},
+  author={Pi, Huaijin and Cen, Zhi and Dou, Zhiyang and Komura, Taku},
+  journal={arXiv preprint arXiv:25},
+  year={2025}
+}</code></pre>
+                <hr />
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center" style="margin-bottom: 10px">
+        Thanks to
+        <a href="https://lioryariv.github.io/" target="_blank">Lior Yariv</a>
+        for the website template.
+    </footer>
+
+</body>
+
+</html>
