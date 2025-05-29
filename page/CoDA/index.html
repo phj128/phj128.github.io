@@ -240,6 +240,11 @@
         .a1x1demo {
             aspect-ratio: 1600/1672;
         }
+
+        /* too many dots, makes page have bottom scrollbar. so remove dots */
+        .carousel-indicators {
+            display: none !important;
+        }
     </style>
     <script>
 
@@ -314,9 +319,9 @@
                 (2) The key idea is a novel <strong>
                   <span style="color: #78aa58">coordinated</span> diffusion noise optimization framework</strong>,
                   where we perform noise-space optimization over three specialized diffusion models for the body, left hand, and right hand.
-                The coordination naturally emerges through gradient flow along the human kinematic chain.💪<br>
+                The coordination naturally emerges through gradient flow along the human kinematic chain. 💪<br>
                 (3) To improve precision of manipulation, we adopt a <strong><span style="color: #c68b5b">unified</span> representation</strong> based on basis point sets (BPS), where end-effector positions are encoded as distances to the same BPS used for object geometry. 
-                The resulting trajectories serve as targets to guide the optimization of diffusion noise, producing highly accurate motion.🎉
+                The resulting trajectories serve as targets to guide the optimization of diffusion noise, producing highly accurate motion. 🎉
               </p>
             </div>
           </div>
@@ -849,6 +854,7 @@
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
+                    <p id="carousel-index" class="text-center mt-2">1 / 17</p>
                 </div>
             </div>
         </div>
@@ -882,6 +888,20 @@
         <a href="https://lioryariv.github.io/" target="_blank">Lior Yariv</a>
         for the website template.
     </footer>
+
+<script>
+    $(document).ready(function () {
+      var totalItems = $('#bkgdCarousel .carousel-item').length;
+  
+      $('#bkgdCarousel').on('slide.bs.carousel', function (e) {
+        var nextIndex = $(e.relatedTarget).index() + 1;
+        $('#carousel-index').text(nextIndex + ' / ' + totalItems);
+      });
+  
+      // 初始化
+      $('#carousel-index').text('1 / ' + totalItems);
+    });
+  </script>
 
 </body>
 
