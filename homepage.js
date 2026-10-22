@@ -10,6 +10,7 @@ document.querySelectorAll('.paper-media').forEach(media => {
   let requested = false;
   let requestId = 0;
   let loadingTimer;
+  let bufferedUntil = 0;
   const preview = { stop };
 
   function stop() {
@@ -39,19 +40,34 @@ document.querySelectorAll('.paper-media').forEach(media => {
     button.title = 'Video could not start. Click to retry.';
   }
 
+  function watchLoading(currentRequest) {
+    clearTimeout(loadingTimer);
+    loadingTimer = setTimeout(() => {
+      if (currentRequest === requestId && requested) retry();
+    }, 20000);
+  }
+
+  video.addEventListener('progress', () => {
+    if (!requested || media.classList.contains('is-playing')) return;
+    const end = video.buffered.length ? video.buffered.end(video.buffered.length - 1) : 0;
+    if (end > bufferedUntil) {
+      bufferedUntil = end;
+      watchLoading(requestId);
+    }
+  });
+
   async function play() {
     if (requested) return;
     if (activePreview && activePreview !== preview) activePreview.stop();
     activePreview = preview;
     const currentRequest = ++requestId;
     requested = true;
+    bufferedUntil = 0;
     button.textContent = '… Loading';
     button.setAttribute('aria-pressed', 'true');
     button.removeAttribute('title');
     if (!video.hasAttribute('src')) video.src = video.dataset.src;
-    loadingTimer = setTimeout(() => {
-      if (currentRequest === requestId && requested) retry();
-    }, 12000);
+    watchLoading(currentRequest);
     try {
       await video.play();
       // An interrupted play promise must not overwrite a newer request.
