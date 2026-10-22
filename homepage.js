@@ -1,4 +1,4 @@
-// Load and play a preview only while the visitor is interacting with it.
+// Warm nearby previews before hover; play only while requested.
 document.querySelectorAll('.paper-media').forEach(media => {
   const video = media.querySelector('video');
   const button = media.querySelector('button');
@@ -7,8 +7,18 @@ document.querySelectorAll('.paper-media').forEach(media => {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   let pinned = false;
   let requested = false;
+  let requestId = 0;
+
+  const preloadObserver = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) {
+      video.preload = 'auto';
+      preloadObserver.unobserve(media);
+    }
+  }, { rootMargin: '300px 0px' });
+  preloadObserver.observe(media);
 
   function stop() {
+    requestId += 1;
     requested = false;
     video.pause();
     media.classList.remove('is-playing');
@@ -17,14 +27,20 @@ document.querySelectorAll('.paper-media').forEach(media => {
   }
 
   async function play() {
+    if (requested) return;
+    const currentRequest = ++requestId;
     requested = true;
+    button.textContent = '… Loading';
+    button.setAttribute('aria-pressed', 'true');
     try {
       await video.play();
-      if (!requested) { video.pause(); return; }
+      // A cancelled request must never stop or overwrite a newer hover.
+      if (currentRequest !== requestId) return;
       media.classList.add('is-playing');
       button.textContent = 'Ⅱ Pause';
       button.setAttribute('aria-pressed', 'true');
     } catch {
+      if (currentRequest !== requestId) return;
       pinned = false;
       stop();
     }
