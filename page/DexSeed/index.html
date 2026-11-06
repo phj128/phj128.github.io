@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fdfaf4">
+  <meta name="description" content="DexSeed expands human hand–object interactions into robot demonstrations for dexterous policy learning.">
+  <title>DexSeed — Dexterous Policy Learning from Human Interactions</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css?v=7a2e5185bc9f">
+  <link rel="stylesheet" href="assets/css/method.css?v=3c99b91ac40b">
+  <script defer src="assets/js/data.js?v=9b650cf45261"></script>
+  <script defer src="assets/js/site.js?v=da35ba5f3e60"></script>
+  <script defer src="assets/js/method.js?v=1f964a8e7047"></script>
+  <script defer src="assets/js/grasp-browser.js?v=e7fb1d5ce7bf"></script>
+</head>
+<body>
+<a class="skip-link" href="#real-world">Skip to demonstrations</a>
+<header class="site-nav"><div><a class="brand" href="#top">DexSeed</a><button id="motion-toggle" class="text-button" type="button" aria-pressed="false">Pause videos <span aria-hidden="true">Ⅱ</span></button></div></header>
+<nav class="contents" aria-label="Contents"><span>Contents</span><a href="#top">Top</a><a href="#real-world">Real-world results</a><a href="#method">Method</a><a href="#grasp-bank">Grasp bank</a><a href="#demonstrations">Demonstrations</a><a href="#comparison">Physics comparison</a><a href="#simulation">Simulation VLA</a><a href="#failure">Failure case</a><a href="#citation">BibTeX</a></nav>
+<main class="page">
+  <section class="hero" id="top" aria-labelledby="project-title">
+    <h1 id="project-title">DexSeed<span>Expanding Human Hand–Object Interactions into Robot Demonstrations for Dexterous Policy Learning</span></h1>
+    <div class="authors" aria-label="Authors">
+      <a href="https://phj128.github.io/">Huaijin Pi</a><a href="https://zehongs.github.io/">Zehong Shen</a><span>Yong Wang</span><a href="https://xukechun.github.io/">Kechun Xu</a><span>Changpeng Wang</span><a href="https://kune1008.github.io/">Dingkun Wei</a><span>Xueyang Wang</span><a href="https://wenjiawang0312.github.io/">Wenjia Wang</a><a href="https://shenyujun.github.io/">Yujun Shen</a><span>Xing Zhu</span><a href="https://i.cs.hku.hk/~taku/">Taku Komura</a>
+    </div>
+    <div class="hero-links"><a href="#real-world">[Demos]</a><a href="#method">[Method]</a><a href="#citation">[Cite]</a></div>
+  </section>
+
+  <section id="real-world" class="section opening" aria-labelledby="real-title">
+    <p class="eyebrow">01 / Real-world VLA results</p>
+    <h2 id="real-title">One policy. Eight ways to grasp.</h2>
+    <p class="lead">Dexterous pick-and-place, fine-tuned on generated demonstrations without collecting real-robot action demonstrations.</p>
+    <div class="tab-row" id="real-tabs" role="tablist" aria-label="Real-world demonstrations">
+      <button type="button" id="real-tab-modes" role="tab" aria-controls="real-panel" aria-selected="true" data-real="modes">Eight grasp modes</button>
+      <button type="button" id="real-tab-language" role="tab" aria-controls="real-panel" aria-selected="false" tabindex="-1" data-real="language">One object, two grasps</button>
+      <button type="button" id="real-tab-objects" role="tab" aria-controls="real-panel" aria-selected="false" tabindex="-1" data-real="objects">Across objects</button>
+      <button type="button" id="real-tab-locations" role="tab" aria-controls="real-panel" aria-selected="false" tabindex="-1" data-real="locations">Across locations</button>
+      <button type="button" id="real-tab-more" role="tab" aria-controls="real-panel" aria-selected="false" tabindex="-1" data-real="more">More results</button>
+    </div>
+    <div id="real-panel" role="tabpanel" aria-labelledby="real-tab-modes" tabindex="0"><div id="real-grid"></div></div>
+    <div class="section-tail"><p id="real-description">Real-robot executions across all eight grasp modes.</p><span>Click any video to enlarge ↗</span></div>
+  </section>
+
+  <section class="section" id="method" aria-labelledby="method-title">
+    <p class="eyebrow">02 / From interaction to demonstration</p>
+    <h2 id="method-title">Keep the grasp. Expand the possibilities.</h2>
+    <p class="lead">First, organize human interactions by how the hand grasps. Then follow one selected interaction through retargeting, motion augmentation, physics, and rendering into robot training data.</p>
+    <div class="method-playback">
+      <div><button id="method-tour" type="button" class="outline-button" aria-pressed="true">Ⅱ Pause walkthrough</button><button id="method-replay" type="button" class="text-button">↺ Restart</button></div>
+    </div>
+    <nav id="method-progress" aria-label="Method chapters">
+      <ol class="method-chapters">
+        <li><button type="button" data-step="0" aria-controls="method-panel"><span class="chapter-label">01 <b>Grasp bank</b></span><span class="chapter-track" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-step="1" aria-controls="method-panel"><span class="chapter-label">02 <b>Retarget</b></span><span class="chapter-track" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-step="2" aria-controls="method-panel"><span class="chapter-label">03 <b>Augment</b></span><span class="chapter-track" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-step="3" aria-controls="method-panel"><span class="chapter-label">04 <b>Realize</b></span><span class="chapter-track" aria-hidden="true"><i></i></span></button></li>
+        <li><button type="button" data-step="4" aria-controls="method-panel"><span class="chapter-label">05 <b>Render</b></span><span class="chapter-track" aria-hidden="true"><i></i></span></button></li>
+      </ol>
+    </nav>
+    <div class="method-panel" id="method-panel" role="region" aria-labelledby="method-heading">
+      <div class="method-copy"><span id="method-category" class="small-label"></span><h3 id="method-heading"></h3><p id="method-description"></p></div>
+      <div id="method-media"></div>
+      <div class="method-output"><span id="method-output"></span><div><button type="button" id="method-prev" aria-label="Previous method stage">←</button><span id="method-count">01 / 05</span><button type="button" id="method-next" aria-label="Next method stage">→</button></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="grasp-bank" aria-labelledby="bank-title">
+    <p class="eyebrow">03 / Explore the generated data</p><h2 id="bank-title">A grasp is more than an object.</h2>
+    <p class="lead">Choose a grasp mode, then explore its source interactions, geometry variants, augmented trajectories, physical rollouts, and rendered observations.</p>
+    <div class="mode-tabs" id="mode-tabs" role="tablist" aria-label="Grasp modes"></div>
+    <div id="bank-panel" role="tabpanel" tabindex="0"><h3 id="bank-heading"></h3>
+      <div id="bank-stages" class="data-stages" role="tablist" aria-label="Demonstration stages">
+        <button type="button" id="data-stage-grasps" role="tab" aria-controls="bank-stage-panel" aria-selected="true" data-stage="grasps"><span>01</span>Human → Wuji</button>
+        <button type="button" id="data-stage-geometry" role="tab" aria-controls="bank-stage-panel" aria-selected="false" tabindex="-1" data-stage="geometry"><span>02</span>Geometry</button>
+        <button type="button" id="data-stage-reference" role="tab" aria-controls="bank-stage-panel" aria-selected="false" tabindex="-1" data-stage="reference"><span>03</span>Trajectories</button>
+        <button type="button" id="data-stage-physics" role="tab" aria-controls="bank-stage-panel" aria-selected="false" tabindex="-1" data-stage="physics"><span>04</span>Physics</button>
+        <button type="button" id="data-stage-rendering" role="tab" aria-controls="bank-stage-panel" aria-selected="false" tabindex="-1" data-stage="rendering"><span>05</span>Rendering</button>
+      </div>
+      <div id="bank-cases" class="case-picker" hidden><span>Source interaction</span><div id="bank-case-buttons" role="group" aria-label="Source interactions in this grasp mode"></div></div>
+      <div id="bank-stage-panel" role="tabpanel" aria-labelledby="data-stage-grasps"><p id="bank-description" class="caption"></p><div id="bank-media"></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="demonstrations" aria-labelledby="data-title">
+    <p class="eyebrow">04 / Generated demonstrations</p><h2 id="data-title">Small seeds. A much larger repertoire.</h2>
+    <div class="dataset-numbers" aria-label="Paper dataset scale"><div><strong>19</strong><span>human source sequences</span></div><div><strong>8</strong><span>grasp modes</span></div><div><strong>17</strong><span>object categories</span></div><div><strong>25,270</strong><span>robot trajectories</span></div></div>
+    <div id="dataset-media"></div><p class="caption">Generated robot demonstrations across objects, geometries, and trajectories.</p>
+  </section>
+
+  <section class="section" id="comparison" aria-labelledby="comparison-title">
+    <p class="eyebrow">05 / Physics-based realization</p><h2 id="comparison-title">From a motion reference to physical execution.</h2>
+    <p class="lead">Four policies follow the same reference arm motion. The learned finger policy must maintain the interaction through grasping, transport, and placement.</p>
+    <div class="comparison-top"><label>Compare an example <select id="comparison-select"><option value="1">Water bottle · G1</option><option value="2">Stapler · G2</option><option value="3">Apple · G4</option><option value="4">Mug · G5</option></select></label><span class="small-label">Matched reference-arm evaluation</span></div>
+    <div id="comparison-media"></div>
+    <div class="result-bars" aria-label="FR3 rollout success rates"><div><span>ManipTrans</span><div><i style="--value:34.25%"></i></div><strong>34.25%</strong></div><div><span>Dexplore</span><div><i style="--value:24.81%"></i></div><strong>24.81%</strong></div><div><span>w/o Arm</span><div><i style="--value:28.02%"></i></div><strong>28.02%</strong></div><div class="ours"><span>Ours</span><div><i style="--value:95.5%"></i></div><strong>95.50%</strong></div></div>
+    <p class="caption">FR3 rollout success in the physics-based imitation experiment. ManipTrans, Dexplore, and w/o Arm train with a floating hand; Ours incorporates arm tracking during training.</p>
+  </section>
+
+  <section class="section" id="simulation" aria-labelledby="simulation-title">
+    <p class="eyebrow">06 / Simulation VLA results</p><h2 id="simulation-title">Learning to act from generated experience.</h2>
+    <p class="lead">The fine-tuned vision–language–action policy jointly predicts arm and finger actions, conditioned on the requested grasp.</p>
+    <div id="simulation-media"></div>
+  </section>
+
+  <section class="section failure-section" id="failure" aria-labelledby="failure-title"><div><p class="eyebrow">07 / Failure case</p><h2 id="failure-title">When the interaction slips.</h2><p>The mug handle slips along the fingers during execution, and the placement is not completed.</p></div><div id="failure-media"></div></section>
+
+  <section class="section citation" id="citation" aria-labelledby="citation-title"><div class="citation-heading"><h2 id="citation-title">BibTeX</h2><button class="outline-button" id="copy-citation" type="button">Copy BibTeX</button></div><pre><code id="bibtex">@misc{pi2026dexseed,
+  title = {DexSeed: Expanding Human Hand--Object Interactions into Robot Demonstrations for Dexterous Policy Learning},
+  author = {Huaijin Pi and Zehong Shen and Yong Wang and Kechun Xu and Changpeng Wang and Dingkun Wei and Xueyang Wang and Wenjia Wang and Yujun Shen and Xing Zhu and Taku Komura},
+  year = {2026}
+}</code></pre><span id="copy-status" class="caption" role="status"></span></section>
+  <footer><a class="brand" href="#top">DexSeed</a><span>Human interactions → Robot demonstrations</span><a href="#top">Back to top ↑</a></footer>
+</main>
+<dialog id="video-dialog" aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">Demonstration</h2><button type="button" id="dialog-close" aria-label="Close video">×</button></div><video id="dialog-video" controls playsinline preload="none"></video><p id="dialog-description"></p></dialog>
+<noscript><p class="no-script">Enable JavaScript to explore the video demonstrations and animated method.</p></noscript>
+</body>
+</html>
